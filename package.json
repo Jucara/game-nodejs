@@ -5,5 +5,21 @@
   "dependencies": {
     "express": "^4.15.2",
     "socket.io": "^2.2.0"
-  }
+  },
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jucara/game-nodejs.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jucara/game-nodejs/issues"
+  },
+  "homepage": "https://github.com/Jucara/game-nodejs#readme"
 }
