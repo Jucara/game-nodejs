@@ -1,8 +1,8 @@
 import Piece from './piece.js';
 
 
-const whitepawn = require('./img/whitepawn36.png');
-const blackpawn = require('./img/blackpawn36.png');
+const whitepawn = require('./img/whitepawn40.png');
+const blackpawn = require('./img/blackpawn40.png');
 // const test = require('./img/test.png');
 
 

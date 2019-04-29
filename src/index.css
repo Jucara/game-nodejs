@@ -61,6 +61,7 @@ ol, ul {
 /*Board color scheme Wheat from http://omgchess.blogspot.com/2015/09/chess-board-color-schemes.html*/
 .dark-square{
 background-color: RGB(187,190,100);
+background-image: auto;
 }
 
 .light-square{
