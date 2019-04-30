@@ -1,0 +1,63 @@
+.App {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-view {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#checker-board {
+  height: 43.75rem;
+  width: 43.75rem;
+  background-color: #555555;
+  border: 10px solid rgba(0,0,0,0.65);
+	border-radius: 10px;
+
+}
+.square {
+	width: 5.313rem;
+	height: 5.313rem;
+	float: left;
+	}
+
+.square:hover {
+  z-index: 1;
+  transition: transform 0.2s;
+  outline: 1px solid transparent;
+  transform: scale(1.1) rotate(2deg);
+  filter: drop-shadow(7px 7px 2px #111111);
+}
+
+	.dark {
+    background-color: rgba(0,0,0,0.25);
+    // background-image: url(../assets/cave_bricks_dark.png);
+    background-size: cover;
+   }
+	.light {
+    background-color: rgba(255,255,255,0.25);
+    // background-image: url(../assets/cave_bricks_light.png);
+    background-size: cover;
+  }
+
+.checker {
+	width: 5.313rem;
+	height: 5.313rem;
+  position: relative;
+	}
+	.red {
+    // background-color: red;
+    background-image: url(../assets/blackpawn.png);
+    background-size: cover;
+    background-position: bottom;
+  }
+	.blue {
+    // background-color: blue;
+    background-image: url(../assets/whitepawn.png);
+    background-size: cover;
+    background-position: bottom;
+  }
