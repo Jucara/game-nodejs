@@ -13,6 +13,8 @@
     "react-scripts": "3.0.0"
   },
   "scripts": {
+    "dev": "npm run start & npm run node",
+    "node": "node server.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

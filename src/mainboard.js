@@ -52,7 +52,7 @@ export default class Mainboard extends Component {
      if(this.state.board[choice].content === ''){
        this.handleEmpty(choice)
      }
-     else if(this.state.board[choice].content !== ''){
+     else {
        this.handleOccupied(choice)
      }
   }
@@ -87,86 +87,107 @@ export default class Mainboard extends Component {
     let row = parseInt(this.state.selected.substring(1));
     let legalMove = [];
 
+    let moveUpperLeft = this.state.colNames[column - 2] + (row - 1);
+    let moveUpperRight = this.state.colNames[column] + (row - 1);
+    let moveLowerLeft = this.state.colNames[column - 2] + (row + 1);
+    let moveLowerRight = this.state.colNames[column] + (row + 1);
 
-    if(column === 1){
-      column = this.state.colNames[column];
-      if(pieceColor === 'red'){
-        row = row + 1;
-        let move = column + row
-
-        if(this.state.board[move].content === ''){
-          legalMove.push(move);
-          return legalMove;
-          }
-      }
-      else{
-        if(pieceColor === 'blue'){
-          row = row - 1;
-          let move = column + row
-
-          if(this.state.board[move].content === ''){
-            legalMove.push(move);
-            return legalMove;
-          }
-        }
-      }
+    if((column - 2 >= 0) && (row < 8) && (this.state.board[moveLowerLeft].content === '') && (pieceColor === 'red')){
+      legalMove.push(moveLowerLeft);
     }
-    else if (column === 8) {
-      column = this.state.colNames[column-2];
-      if(pieceColor === 'red'){
-        row = row + 1;
-        let move = column + row;
-
-        if(this.state.board[move].content === ''){
-          legalMove.push(move);
-          return legalMove;
-        }
-      }
-      else{
-        if(pieceColor === 'blue'){
-          row = row -1;
-          let move = column + row;
-
-          if(this.state.board[move].content === ''){
-            legalMove.push(move);
-            return legalMove;
-          }
-        }
-      }
+    
+    if((column < 8) && (row < 8) && (this.state.board[moveLowerRight].content === '') && (pieceColor === 'red')){
+      legalMove.push(moveLowerRight);
     }
-    else {
-      let columnLeft = this.state.colNames[column-2];
-      let columnRight = this.state.colNames[column];
-      if(pieceColor === 'red'){
-        row = row +1;
-        let moveLeft = columnLeft + row;
-        let moveRight = columnRight + row;
 
-        if(this.state.board[moveLeft].content === ''){
-          legalMove.push(moveLeft);
-        }
-        if(this.state.board[moveRight].content === ''){
-          legalMove.push(moveRight);
-        }
-        return legalMove;
-      }
-      else{
-        if(pieceColor === 'blue'){
-          row = row -1;
-          let moveLeft = columnLeft + row;
-          let moveRight = columnRight + row;
-
-          if(this.state.board[moveLeft].content === ''){
-            legalMove.push(moveLeft);
-          }
-          if(this.state.board[moveRight].content === ''){
-            legalMove.push(moveRight);
-          }
-          return legalMove;
-        }
-      }
+    if((column - 2 >= 0) && (row >= 2) && (this.state.board[moveUpperLeft].content === '') && (pieceColor === 'blue')){
+      legalMove.push(moveUpperLeft);
     }
+    
+    if((column < 8) && (row >= 2) && (this.state.board[moveUpperRight].content === '') && (pieceColor === 'blue')){
+      legalMove.push(moveUpperRight);
+    }
+    return legalMove;
   }
+  //   if(column === 1){
+  //     column = this.state.colNames[column];
+  //     if(pieceColor === 'red'){
+  //       row = row + 1;
+  //       let move = column + row
+
+  //       if(this.state.board[move].content === ''){
+  //         legalMove.push(move);
+  //         return legalMove;
+  //         }
+  //     }
+  //     else{
+  //       if(pieceColor === 'blue'){
+  //         row = row - 1;
+  //         let move = column + row
+
+  //         if(this.state.board[move].content === ''){
+  //           legalMove.push(move);
+  //           return legalMove;
+  //         }
+  //       }
+  //     }
+  //   }
+  //   else if (column === 8) {
+  //     column = this.state.colNames[column-2];
+  //     if(pieceColor === 'red'){
+  //       row = row + 1;
+  //       let move = column + row;
+
+  //       if(this.state.board[move].content === ''){
+  //         legalMove.push(move);
+  //         return legalMove;
+  //       }
+  //     }
+  //     else{
+  //       if(pieceColor === 'blue'){
+  //         row = row -1;
+  //         let move = column + row;
+
+  //         if(this.state.board[move].content === ''){
+  //           legalMove.push(move);
+  //           return legalMove;
+  //         }
+  //       }
+  //     }
+  //   }
+  //   else {
+  //     let columnLeft = this.state.colNames[column-2];
+  //     let columnRight = this.state.colNames[column];
+  //     if(pieceColor === 'red'){
+  //       row = row +1;
+  //       let moveLeft = columnLeft + row;
+  //       let moveRight = columnRight + row;
+
+  //       if(this.state.board[moveLeft].content === ''){
+  //         legalMove.push(moveLeft);
+  //       }
+  //       if(this.state.board[moveRight].content === ''){
+  //         legalMove.push(moveRight);
+  //       }
+  //       return legalMove;
+  //     }
+  //     else{
+  //       if(pieceColor === 'blue'){
+  //         row = row -1;
+  //         let moveLeft = columnLeft + row;
+  //         let moveRight = columnRight + row;
+
+  //         if(this.state.board[moveLeft].content === ''){
+  //           legalMove.push(moveLeft);
+  //         }
+  //         if(this.state.board[moveRight].content === ''){
+  //           legalMove.push(moveRight);
+  //         }
+  //         return legalMove;
+  //       }
+  //     }
+  //   }
+  // }
 
 
   render() {
