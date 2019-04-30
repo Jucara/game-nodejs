@@ -1,7 +1,6 @@
 let app = require('express')();
 let http = require('http').createServer(app);
 let io = require('socket.io')(http);
-let game = require('./game.js')
 
 http.listen(4000, function(){
   console.log('listening on: 4000')
