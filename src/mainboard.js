@@ -9,6 +9,7 @@ export default class Mainboard extends Component {
       board: {},
       selected: '',
       legalMove: [],
+      mandatory: [],
       colNames: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
     }
     
@@ -21,7 +22,8 @@ export default class Mainboard extends Component {
           id: colNames[col] + (row+1),
           content: '',
           pieceColor: '',
-          highlighted: false
+          highlighted: false,
+          queen: false
         };
       }
     }
@@ -34,10 +36,11 @@ export default class Mainboard extends Component {
     blues.forEach(pos => this.changePiece(pos, <div className="blue checker"></div>, 'blue'));
   }
 
-  changePiece(id, content, color){
+  changePiece(id, content, color, isQueen){
     let newBoard = this.state.board;
-    newBoard[id].content = content;
+    newBoard[id].content = content
     newBoard[id].pieceColor = color;
+    newBoard[id].queen = isQueen;
     this.setState({board: newBoard});
   }
 
@@ -53,6 +56,7 @@ export default class Mainboard extends Component {
   }
 
   handleEmpty(choice){
+
     if(this.state.selected){
         
       let index = this.state.legalMove.indexOf(choice)
@@ -62,35 +66,69 @@ export default class Mainboard extends Component {
         this.setState({board: newBoard});
         let selected = this.state.board[this.state.selected];
         let pieceColor = selected.pieceColor;
-        
+ 
         let row_origin = parseInt(this.state.selected.substring(1));
         let row_destination = parseInt(choice.substring(1));
+        
+        if(row_destination === 8 && pieceColor === 'red'){
+          this.changePiece(choice, <div className="red-queen checker"></div>, pieceColor, true)
+ 
+        }
+        
+        else if(row_destination === 1 && pieceColor === 'blue'){
+          this.changePiece(choice, <div className="blue-queen checker"></div>, pieceColor, true)
+ 
+        }
+        
+        else {
+          this.changePiece(choice, selected.content, pieceColor, selected.queen);
+        }
+        
         if (Math.abs(row_origin - row_destination) > 1) {
           let column_origin = this.state.colNames.indexOf(this.state.selected.substring(0, 1));
           let column_destination = this.state.colNames.indexOf(choice.substring(0, 1));
-          console.log((row_origin + row_destination) / 2)
-          this.changePiece((this.state.colNames[(column_origin + column_destination) / 2] + ((row_origin + row_destination) / 2)) , '', '');
+ 
+ 
+          this.changePiece((this.state.colNames[(column_origin + column_destination) / 2] + ((row_origin + row_destination) / 2)) , '', '', false);
         }
-        this.changePiece(choice, selected.content, pieceColor);
-        this.changePiece(this.state.selected, '', '');
+        this.changePiece(this.state.selected, '', '', false);
         this.setState({legalMove: []});
       }
-      else{
+      else
         console.log('move pas legal')
-      }
+      
     }
   }
 
   async handleOccupied(choice){
     await this.setState({selected: choice});
+    for(let square in this.state.board){
+      this.mandatoryMove(this.state.board[square]);
+      console.log(this.state.mandatory)
+    }
     let legalMove = this.possibleMove();
     this.setState({legalMove: legalMove});
     let newBoard = {...this.state.board};
     for(let square in newBoard){
       newBoard[square].highlighted = legalMove.includes(square);
     }
-    
+
     this.setState({board: newBoard});
+  }
+
+  mandatoryMove(cell) {
+    //console.log(cell);
+    let letter = this.state.selected.substring(0,1);
+    let column = this.state.colNames.indexOf(letter) + 1;
+    let row = parseInt(this.state.selected.substring(1));
+    let pieceColor = cell.color;
+    if(cell.id === 'E3') 
+      console.log(pieceColor)
+
+    if ((pieceColor === 'dark' || cell.queen) && (column - 3 >= 0) && (row < 7) && (this.state.board[this.state.colNames[column - 2] + (row + 1)].pieceColor !== pieceColor) &&  (this.state.board[(this.state.colNames[column - 3] + (row + 2))].content === '')) {
+      console.log(1000);
+      this.state.mandatory.push((this.state.colNames[column - 3] + (row + 2)))
+    }
   }
 
   possibleMove(){
@@ -105,8 +143,8 @@ export default class Mainboard extends Component {
     let moveUpperRight = this.state.colNames[column] + (row - 1);
     let moveLowerLeft = this.state.colNames[column - 2] + (row + 1);
     let moveLowerRight = this.state.colNames[column] + (row + 1);
-  
-    if(((column - 2 >= 0) && (row < 8) && (this.state.board[moveLowerLeft].content === '') && (pieceColor === 'red')) || ((pieceColor === 'red') && (column - 3 >= 0) && (this.state.board[moveLowerLeft].pieceColor !== pieceColor) &&   (this.state.board[(this.state.colNames[column - 3] + (row + 2))].content === ''))){
+
+    if(((column - 2 >= 0) && (row < 8) && (this.state.board[moveLowerLeft].content === '' ) && (pieceColor === 'red' || selected.queen)) || ((pieceColor === 'red' || selected.queen) && (column - 3 >= 0) && (row < 7) && (this.state.board[moveLowerLeft].pieceColor !== pieceColor) &&   (this.state.board[(this.state.colNames[column - 3] + (row + 2))].content === ''))){
       if(this.state.board[moveLowerLeft].content === '')
         legalMove.push(moveLowerLeft);
 
@@ -114,7 +152,7 @@ export default class Mainboard extends Component {
         legalMove.push((this.state.colNames[column - 3] + (row + 2)));
     }
     
-    if(((column < 8) && (row < 8) && (this.state.board[moveLowerRight].content === '') && (pieceColor === 'red')) || ((pieceColor === 'red') && (column < 7) && (row < 7) && (this.state.board[moveLowerRight].pieceColor !== pieceColor) && (this.state.board[(this.state.colNames[column + 1] + (row + 2))].content === ''))){
+    if(((column < 8) && (row < 8) && (this.state.board[moveLowerRight].content === '') && (pieceColor === 'red' || selected.queen)) || ((pieceColor === 'red' || selected.queen) && (column < 7) && (row < 7) && (this.state.board[moveLowerRight].pieceColor !== pieceColor) && (this.state.board[(this.state.colNames[column + 1] + (row + 2))].content === ''))){
       if(this.state.board[moveLowerRight].content === '')
         legalMove.push(moveLowerRight);
 
@@ -122,15 +160,15 @@ export default class Mainboard extends Component {
         legalMove.push((this.state.colNames[column + 1] + (row + 2)));
     }
 
-    if(((column - 2 >= 0) && (row >= 2) && (this.state.board[moveUpperLeft].content === '') && (pieceColor === 'blue')) || ((pieceColor === 'blue') && (column - 3 >= 0) && (row > 2) && (this.state.board[moveUpperLeft].pieceColor !== pieceColor) && (this.state.board[(this.state.colNames[column - 3] + (row - 2))].content === ''))){
+    if(((column - 2 >= 0) && (row >= 2) && (this.state.board[moveUpperLeft].content === '') && (pieceColor === 'blue' || selected.queen)) || ((pieceColor === 'blue' || selected.queen) && (column - 3 >= 0) && (row > 2) && (this.state.board[moveUpperLeft].pieceColor !== pieceColor) && (this.state.board[(this.state.colNames[column - 3] + (row - 2))].content === ''))){
       if(this.state.board[moveUpperLeft].content === '')
         legalMove.push(moveUpperLeft);
 
       else
         legalMove.push((this.state.colNames[column - 3] + (row - 2)));
     }
-    
-    if(((column < 8) && (row >= 2) && (this.state.board[moveUpperRight].content === '') && (pieceColor === 'blue')) || ((pieceColor === 'blue') && (column < 7) && (row > 2) && (this.state.board[moveUpperRight].pieceColor !== pieceColor) && (this.state.board[(this.state.colNames[column + 1] + (row - 2))].content === ''))){
+
+    if(((column < 8) && (row >= 2) && (this.state.board[moveUpperRight].content === '') && (pieceColor === 'blue' || selected.queen)) || ((pieceColor === 'blue' || selected.queen) && (column < 7) && (row > 2) && (this.state.board[moveUpperRight].pieceColor !== pieceColor) && (this.state.board[(this.state.colNames[column + 1] + (row - 2))].content === ''))){
       if(this.state.board[moveUpperRight].content === '')
         legalMove.push(moveUpperRight);
 
@@ -139,9 +177,10 @@ export default class Mainboard extends Component {
     }
     return legalMove;
   }
+
   
   render() {
-    console.log(this.state.board)
+    //console.log(this.state.board)
     return (
 
       <div className="main-view">

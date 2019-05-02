@@ -62,6 +62,19 @@
     background-position: bottom;
   }
 
+  .red-queen {
+    // background-color: red;
+    background-image: url(../assets/blackpawn.png);
+    background-size: cover;
+    background-position: bottom;
+  }
+	.blue-queen {
+    // background-color: blue;
+    background-image: url(../assets/whitepawn.png);
+    background-size: cover;
+    background-position: bottom;
+  }
+
   .highlighted{
     background-color:yellow !important;
     width: 5.313rem;
