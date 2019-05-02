@@ -59,9 +59,19 @@ export default class Mainboard extends Component {
 
   handleEmpty(choice){
     if(this.state.selected){
-      if(this.state.legalMove.indexOf(choice) !== -1){
+      let index = this.state.legalMove.indexOf(choice)
+      if(index !== -1){
         let selected = this.state.board[this.state.selected];
         let pieceColor = selected.pieceColor;
+        
+        let row_origin = parseInt(this.state.selected.substring(1));
+        let row_destination = parseInt(choice.substring(1));
+        if (Math.abs(row_origin - row_destination) > 1) {
+          let column_origin = this.state.colNames.indexOf(this.state.selected.substring(0, 1));
+          let column_destination = this.state.colNames.indexOf(choice.substring(0, 1));
+          console.log((row_origin + row_destination) / 2)
+          this.changePiece((this.state.colNames[(column_origin + column_destination) / 2] + ((row_origin + row_destination) / 2)) , '', '');
+        }
         this.changePiece(choice, selected.content, pieceColor);
         this.changePiece(this.state.selected, '', '');
         this.setState({legalMove: []});
@@ -83,7 +93,7 @@ export default class Mainboard extends Component {
     let selected = this.state.board[this.state.selected];
     let pieceColor = selected.pieceColor;
     let letter = this.state.selected.substring(0,1);
-    let column = this.state.colNames.indexOf(letter) +1;
+    let column = this.state.colNames.indexOf(letter) + 1;
     let row = parseInt(this.state.selected.substring(1));
     let legalMove = [];
 
@@ -91,21 +101,43 @@ export default class Mainboard extends Component {
     let moveUpperRight = this.state.colNames[column] + (row - 1);
     let moveLowerLeft = this.state.colNames[column - 2] + (row + 1);
     let moveLowerRight = this.state.colNames[column] + (row + 1);
+    // console.log(this.state.board[this.state.colNames[(column - 3) + (row + 2)]].content);
+    // console.log(this.state.board[(this.state.colNames[column - 3] + (row + 2))].content);
+    // console.log(this.state.board[moveLowerLeft].pieceColor);
+    // console.log(pieceColor);
+    // console.log(column - 3);
+    // console.log(row);
 
-    if((column - 2 >= 0) && (row < 8) && (this.state.board[moveLowerLeft].content === '') && (pieceColor === 'red')){
-      legalMove.push(moveLowerLeft);
+    if(((column - 2 >= 0) && (row < 8) && (this.state.board[moveLowerLeft].content === '') && (pieceColor === 'red')) || ((column - 3 >= 0) && (this.state.board[moveLowerLeft].pieceColor !== pieceColor) &&   (this.state.board[(this.state.colNames[column - 3] + (row + 2))].content === ''))){
+      if(this.state.board[moveLowerLeft].content === '')
+        legalMove.push(moveLowerLeft);
+
+      else
+        legalMove.push((this.state.colNames[column - 3] + (row + 2)));
     }
     
-    if((column < 8) && (row < 8) && (this.state.board[moveLowerRight].content === '') && (pieceColor === 'red')){
-      legalMove.push(moveLowerRight);
+    if(((column < 8) && (row < 8) && (this.state.board[moveLowerRight].content === '') && (pieceColor === 'red')) || ((column < 7) && (row < 7) && (this.state.board[moveLowerRight].pieceColor !== pieceColor) && (this.state.board[(this.state.colNames[column + 1] + (row + 2))].content === ''))){
+      if(this.state.board[moveLowerRight].content === '')
+        legalMove.push(moveLowerRight);
+
+      else
+        legalMove.push((this.state.colNames[column + 1] + (row + 2)));
     }
 
-    if((column - 2 >= 0) && (row >= 2) && (this.state.board[moveUpperLeft].content === '') && (pieceColor === 'blue')){
-      legalMove.push(moveUpperLeft);
+    if(((column - 2 >= 0) && (row >= 2) && (this.state.board[moveUpperLeft].content === '') && (pieceColor === 'blue')) || ((column - 3 >= 0) && (row > 2) && (this.state.board[moveUpperLeft].pieceColor !== pieceColor) && (this.state.board[(this.state.colNames[column - 3] + (row - 2))].content === ''))){
+      if(this.state.board[moveUpperLeft].content === '')
+        legalMove.push(moveUpperLeft);
+
+      else
+        legalMove.push((this.state.colNames[column - 3] + (row - 2)));
     }
     
-    if((column < 8) && (row >= 2) && (this.state.board[moveUpperRight].content === '') && (pieceColor === 'blue')){
-      legalMove.push(moveUpperRight);
+    if(((column < 8) && (row >= 2) && (this.state.board[moveUpperRight].content === '') && (pieceColor === 'blue')) || ((column < 7) && (row > 2) && (this.state.board[moveUpperRight].pieceColor !== pieceColor) && (this.state.board[(this.state.colNames[column + 1] + (row - 2))].content === ''))){
+      if(this.state.board[moveUpperRight].content === '')
+        legalMove.push(moveUpperRight);
+
+      else
+        legalMove.push((this.state.colNames[column + 1] + (row - 2)));
     }
     return legalMove;
   }
