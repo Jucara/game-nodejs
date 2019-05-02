@@ -1,11 +1,4 @@
 import React, { Component } from 'react';
-// import avatar_red from './assets/avatar_red.png';
-// import avatar_blue from './assets/avatar_blue.png';
-// import heart from './assets/heart.png';
-// import star from './assets/star.png';
-// import heartRed from './assets/heart.png';
-// import starRed from './assets/star.png';
-// import GameLogic from './game_logic';
 
 export default class Mainboard extends Component {
 
@@ -18,6 +11,7 @@ export default class Mainboard extends Component {
       legalMove: [],
       colNames: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
     }
+    
     const colNames = this.state.colNames;
     for(let row = 0; row < 8; row++){
       for(let col = 0; col < 8; col++){
@@ -26,7 +20,8 @@ export default class Mainboard extends Component {
           color: (row+col)%2 ? 'light' : 'dark',
           id: colNames[col] + (row+1),
           content: '',
-          pieceColor: ''
+          pieceColor: '',
+          highlighted: false
         };
       }
     }
@@ -59,8 +54,12 @@ export default class Mainboard extends Component {
 
   handleEmpty(choice){
     if(this.state.selected){
+        
       let index = this.state.legalMove.indexOf(choice)
       if(index !== -1){
+        let newBoard = {...this.state.board};
+        this.state.legalMove.forEach(element => {newBoard[element].highlighted = false});
+        this.setState({board: newBoard});
         let selected = this.state.board[this.state.selected];
         let pieceColor = selected.pieceColor;
         
@@ -84,9 +83,14 @@ export default class Mainboard extends Component {
 
   async handleOccupied(choice){
     await this.setState({selected: choice});
-    let availableMove = this.possibleMove();
-    await this.setState({legalMove: availableMove})
-
+    let legalMove = this.possibleMove();
+    this.setState({legalMove: legalMove});
+    let newBoard = {...this.state.board};
+    for(let square in newBoard){
+      newBoard[square].highlighted = legalMove.includes(square);
+    }
+    
+    this.setState({board: newBoard});
   }
 
   possibleMove(){
@@ -101,14 +105,8 @@ export default class Mainboard extends Component {
     let moveUpperRight = this.state.colNames[column] + (row - 1);
     let moveLowerLeft = this.state.colNames[column - 2] + (row + 1);
     let moveLowerRight = this.state.colNames[column] + (row + 1);
-    // console.log(this.state.board[this.state.colNames[(column - 3) + (row + 2)]].content);
-    // console.log(this.state.board[(this.state.colNames[column - 3] + (row + 2))].content);
-    // console.log(this.state.board[moveLowerLeft].pieceColor);
-    // console.log(pieceColor);
-    // console.log(column - 3);
-    // console.log(row);
-
-    if(((column - 2 >= 0) && (row < 8) && (this.state.board[moveLowerLeft].content === '') && (pieceColor === 'red')) || ((column - 3 >= 0) && (this.state.board[moveLowerLeft].pieceColor !== pieceColor) &&   (this.state.board[(this.state.colNames[column - 3] + (row + 2))].content === ''))){
+  
+    if(((column - 2 >= 0) && (row < 8) && (this.state.board[moveLowerLeft].content === '') && (pieceColor === 'red')) || ((pieceColor === 'red') && (column - 3 >= 0) && (this.state.board[moveLowerLeft].pieceColor !== pieceColor) &&   (this.state.board[(this.state.colNames[column - 3] + (row + 2))].content === ''))){
       if(this.state.board[moveLowerLeft].content === '')
         legalMove.push(moveLowerLeft);
 
@@ -116,7 +114,7 @@ export default class Mainboard extends Component {
         legalMove.push((this.state.colNames[column - 3] + (row + 2)));
     }
     
-    if(((column < 8) && (row < 8) && (this.state.board[moveLowerRight].content === '') && (pieceColor === 'red')) || ((column < 7) && (row < 7) && (this.state.board[moveLowerRight].pieceColor !== pieceColor) && (this.state.board[(this.state.colNames[column + 1] + (row + 2))].content === ''))){
+    if(((column < 8) && (row < 8) && (this.state.board[moveLowerRight].content === '') && (pieceColor === 'red')) || ((pieceColor === 'red') && (column < 7) && (row < 7) && (this.state.board[moveLowerRight].pieceColor !== pieceColor) && (this.state.board[(this.state.colNames[column + 1] + (row + 2))].content === ''))){
       if(this.state.board[moveLowerRight].content === '')
         legalMove.push(moveLowerRight);
 
@@ -124,7 +122,7 @@ export default class Mainboard extends Component {
         legalMove.push((this.state.colNames[column + 1] + (row + 2)));
     }
 
-    if(((column - 2 >= 0) && (row >= 2) && (this.state.board[moveUpperLeft].content === '') && (pieceColor === 'blue')) || ((column - 3 >= 0) && (row > 2) && (this.state.board[moveUpperLeft].pieceColor !== pieceColor) && (this.state.board[(this.state.colNames[column - 3] + (row - 2))].content === ''))){
+    if(((column - 2 >= 0) && (row >= 2) && (this.state.board[moveUpperLeft].content === '') && (pieceColor === 'blue')) || ((pieceColor === 'blue') && (column - 3 >= 0) && (row > 2) && (this.state.board[moveUpperLeft].pieceColor !== pieceColor) && (this.state.board[(this.state.colNames[column - 3] + (row - 2))].content === ''))){
       if(this.state.board[moveUpperLeft].content === '')
         legalMove.push(moveUpperLeft);
 
@@ -132,7 +130,7 @@ export default class Mainboard extends Component {
         legalMove.push((this.state.colNames[column - 3] + (row - 2)));
     }
     
-    if(((column < 8) && (row >= 2) && (this.state.board[moveUpperRight].content === '') && (pieceColor === 'blue')) || ((column < 7) && (row > 2) && (this.state.board[moveUpperRight].pieceColor !== pieceColor) && (this.state.board[(this.state.colNames[column + 1] + (row - 2))].content === ''))){
+    if(((column < 8) && (row >= 2) && (this.state.board[moveUpperRight].content === '') && (pieceColor === 'blue')) || ((pieceColor === 'blue') && (column < 7) && (row > 2) && (this.state.board[moveUpperRight].pieceColor !== pieceColor) && (this.state.board[(this.state.colNames[column + 1] + (row - 2))].content === ''))){
       if(this.state.board[moveUpperRight].content === '')
         legalMove.push(moveUpperRight);
 
@@ -141,87 +139,7 @@ export default class Mainboard extends Component {
     }
     return legalMove;
   }
-  //   if(column === 1){
-  //     column = this.state.colNames[column];
-  //     if(pieceColor === 'red'){
-  //       row = row + 1;
-  //       let move = column + row
-
-  //       if(this.state.board[move].content === ''){
-  //         legalMove.push(move);
-  //         return legalMove;
-  //         }
-  //     }
-  //     else{
-  //       if(pieceColor === 'blue'){
-  //         row = row - 1;
-  //         let move = column + row
-
-  //         if(this.state.board[move].content === ''){
-  //           legalMove.push(move);
-  //           return legalMove;
-  //         }
-  //       }
-  //     }
-  //   }
-  //   else if (column === 8) {
-  //     column = this.state.colNames[column-2];
-  //     if(pieceColor === 'red'){
-  //       row = row + 1;
-  //       let move = column + row;
-
-  //       if(this.state.board[move].content === ''){
-  //         legalMove.push(move);
-  //         return legalMove;
-  //       }
-  //     }
-  //     else{
-  //       if(pieceColor === 'blue'){
-  //         row = row -1;
-  //         let move = column + row;
-
-  //         if(this.state.board[move].content === ''){
-  //           legalMove.push(move);
-  //           return legalMove;
-  //         }
-  //       }
-  //     }
-  //   }
-  //   else {
-  //     let columnLeft = this.state.colNames[column-2];
-  //     let columnRight = this.state.colNames[column];
-  //     if(pieceColor === 'red'){
-  //       row = row +1;
-  //       let moveLeft = columnLeft + row;
-  //       let moveRight = columnRight + row;
-
-  //       if(this.state.board[moveLeft].content === ''){
-  //         legalMove.push(moveLeft);
-  //       }
-  //       if(this.state.board[moveRight].content === ''){
-  //         legalMove.push(moveRight);
-  //       }
-  //       return legalMove;
-  //     }
-  //     else{
-  //       if(pieceColor === 'blue'){
-  //         row = row -1;
-  //         let moveLeft = columnLeft + row;
-  //         let moveRight = columnRight + row;
-
-  //         if(this.state.board[moveLeft].content === ''){
-  //           legalMove.push(moveLeft);
-  //         }
-  //         if(this.state.board[moveRight].content === ''){
-  //           legalMove.push(moveRight);
-  //         }
-  //         return legalMove;
-  //       }
-  //     }
-  //   }
-  // }
-
-
+  
   render() {
     console.log(this.state.board)
     return (
@@ -237,7 +155,7 @@ export default class Mainboard extends Component {
           {Object.keys(this.state.board).map(key => {
             let square = this.state.board[key];
             return (
-            <div className={'square ' + square.color} id={square.id} key={square.id} onClick={this.handleClick.bind(this)}>
+            <div className={`square ${square.color}${square.highlighted ? ' highlighted' : ''}`} id={square.id} key={square.id} onClick={this.handleClick.bind(this)}>
               {square.content}
             </div>
 
