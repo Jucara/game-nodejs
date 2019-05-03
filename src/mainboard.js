@@ -58,7 +58,10 @@ export default class Mainboard extends Component {
   handleEmpty(choice){
 
     if(this.state.selected){
-        
+      if((this.state.mandatory.length !== 0) && (this.state.mandatory.indexOf(this.state.selected + choice ) === -1)) {
+        console.log("u have to capture smthg u fool")
+        return;
+      }
       let index = this.state.legalMove.indexOf(choice)
       if(index !== -1){
         let newBoard = {...this.state.board};
@@ -93,6 +96,7 @@ export default class Mainboard extends Component {
         }
         this.changePiece(this.state.selected, '', '', false);
         this.setState({legalMove: []});
+        this.setState({mandatory: []});
       }
       else
         console.log('move pas legal')
@@ -103,8 +107,9 @@ export default class Mainboard extends Component {
   async handleOccupied(choice){
     await this.setState({selected: choice});
     for(let square in this.state.board){
-      this.mandatoryMove(this.state.board[square]);
-      console.log(this.state.mandatory)
+      if(this.state.board[square].pieceColor === this.state.board[choice].pieceColor)
+        this.mandatoryMove(this.state.board[square]);
+      
     }
     let legalMove = this.possibleMove();
     this.setState({legalMove: legalMove});
@@ -112,22 +117,56 @@ export default class Mainboard extends Component {
     for(let square in newBoard){
       newBoard[square].highlighted = legalMove.includes(square);
     }
-
+    console.log(this.state.mandatory);
     this.setState({board: newBoard});
   }
 
   mandatoryMove(cell) {
     //console.log(cell);
-    let letter = this.state.selected.substring(0,1);
+    let letter = cell.id.substring(0,1);
     let column = this.state.colNames.indexOf(letter) + 1;
-    let row = parseInt(this.state.selected.substring(1));
-    let pieceColor = cell.color;
-    if(cell.id === 'E3') 
-      console.log(pieceColor)
+    let row = parseInt(cell.id.substring(1));
+    let pieceColor = cell.pieceColor;
+    
+    let moveUpperLeft = this.state.board[this.state.colNames[column - 2] + (row - 1)];
+    let moveUpperRight = this.state.board[this.state.colNames[column] + (row - 1)];
+    let moveLowerLeft = this.state.board[this.state.colNames[column - 2] + (row + 1)];
+    let moveLowerRight = this.state.board[this.state.colNames[column] + (row + 1)];
 
-    if ((pieceColor === 'dark' || cell.queen) && (column - 3 >= 0) && (row < 7) && (this.state.board[this.state.colNames[column - 2] + (row + 1)].pieceColor !== pieceColor) &&  (this.state.board[(this.state.colNames[column - 3] + (row + 2))].content === '')) {
-      console.log(1000);
-      this.state.mandatory.push((this.state.colNames[column - 3] + (row + 2)))
+    if ((pieceColor === 'red' || cell.queen) && (column - 3 >= 0) && (row < 7) && ((moveLowerLeft.pieceColor !== pieceColor) && moveLowerLeft.content !== '') &&  (this.state.board[(this.state.colNames[column - 3] + (row + 2))].content === '')) {
+      
+      if(this.state.mandatory.indexOf(cell.id + this.state.colNames[column - 3] + (row + 2)) === -1) {
+        let newMandatory = this.state.mandatory;
+        newMandatory.push(cell.id + this.state.colNames[column - 3] + (row + 2))
+        this.setState({mandatory: newMandatory});
+      }
+    }
+
+    if ((pieceColor === 'red' || cell.queen) && (column < 7) && (row < 7) && ((moveLowerRight.pieceColor !== pieceColor) && moveLowerRight.content !== '') &&  (this.state.board[(this.state.colNames[column + 1] + (row + 2))].content === '')) {
+      
+      if(this.state.mandatory.indexOf(cell.id + this.state.colNames[column + 1] + (row + 2)) === -1) {
+        let newMandatory = this.state.mandatory;
+        newMandatory.push(cell.id + this.state.colNames[column + 1] + (row + 2))
+        this.setState({mandatory: newMandatory});
+      }
+    }
+
+    if ((pieceColor === 'blue' || cell.queen) && (column - 3 >= 0) && (row > 2) && ((moveUpperLeft.pieceColor !== pieceColor) && moveUpperLeft.content !== '') &&  (this.state.board[(this.state.colNames[column - 3] + (row - 2))].content === '')) {
+      
+      if(this.state.mandatory.indexOf(cell.id + this.state.colNames[column - 3] + (row - 2)) === -1) {
+        let newMandatory = this.state.mandatory;
+        newMandatory.push(cell.id + this.state.colNames[column - 3] + (row - 2))
+        this.setState({mandatory: newMandatory});
+      }
+    }
+
+    if ((pieceColor === 'blue' || cell.queen) && (column < 7) && (row > 2) && ((moveUpperRight.pieceColor !== pieceColor) && moveUpperRight.content !== '') &&  (this.state.board[(this.state.colNames[column + 1] + (row - 2))].content === '')) {
+      
+      if(this.state.mandatory.indexOf(cell.id + this.state.colNames[column + 1] + (row - 2)) === -1) {
+        let newMandatory = this.state.mandatory;
+        newMandatory.push(cell.id + this.state.colNames[column + 1] + (row - 2))
+        this.setState({mandatory: newMandatory});
+      }
     }
   }
 
