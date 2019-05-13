@@ -66,8 +66,8 @@ export default class Mainboard extends Component {
       }
       let index = this.state.legalMove.indexOf(choice)
       if(index !== -1){
-        console.log("1000", this.state.socket);
-        this.state.socket.emit('test', 'Joé is a noob');
+        //console.log("1000", this.state.socket);
+        this.state.socket.emit('move', this.state.selected + choice);
         let newBoard = {...this.state.board};
         this.state.legalMove.forEach(element => {newBoard[element].highlighted = false});
         this.setState({board: newBoard});

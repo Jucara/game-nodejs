@@ -6,14 +6,21 @@ http.listen(4000, function(){
   console.log('listening on: 4000')
 });
 
+// let matrix = [];
+// for(let row = 0; row < 8; row++){
+//   for(let col = 0; col < 8; col++){
+//     matrix[row][col] = 0;
+//   }
+// }
+// console.log(matrix);
 
 io.on('connection', function(socket){
   console.log('Client connected');
+  //console.log(matrix);
   // if (players.length >= 2 )
   //   return;
   // players.push(socket);
-  socket.on('test', function(data){
-    console.log("100");
+  socket.on('move', function(data){
     console.log(data);
   })
   socket.on("Press button", function(data){
@@ -25,7 +32,6 @@ io.on('connection', function(socket){
       socket.emit('message', "It's not your turn, fool!");
     }
   })
-  socket.on('message', console.log);
 })
 
 // let players = [];
