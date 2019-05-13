@@ -1,3 +1,4 @@
+import io from 'socket.io-client';
 import React, { Component } from 'react';
 
 export default class Mainboard extends Component {
@@ -10,7 +11,8 @@ export default class Mainboard extends Component {
       selected: '',
       legalMove: [],
       mandatory: [],
-      colNames: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+      colNames: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
+      socket: io.connect('http://localhost:4000')
     }
     
     const colNames = this.state.colNames;
@@ -59,11 +61,13 @@ export default class Mainboard extends Component {
 
     if(this.state.selected){
       if((this.state.mandatory.length !== 0) && (this.state.mandatory.indexOf(this.state.selected + choice ) === -1)) {
-        console.log("u have to capture smthg u fool")
+        console.log("u have to capture smthg, beginner")
         return;
       }
       let index = this.state.legalMove.indexOf(choice)
       if(index !== -1){
+        console.log("1000", this.state.socket);
+        this.state.socket.emit('test', 'Joé is a noob');
         let newBoard = {...this.state.board};
         this.state.legalMove.forEach(element => {newBoard[element].highlighted = false});
         this.setState({board: newBoard});
@@ -99,7 +103,7 @@ export default class Mainboard extends Component {
         this.setState({mandatory: []});
       }
       else
-        console.log('move pas legal')
+        console.log('move pas legal, noob')
       
     }
   }
@@ -117,12 +121,10 @@ export default class Mainboard extends Component {
     for(let square in newBoard){
       newBoard[square].highlighted = legalMove.includes(square);
     }
-    console.log(this.state.mandatory);
     this.setState({board: newBoard});
   }
 
   mandatoryMove(cell) {
-    //console.log(cell);
     let letter = cell.id.substring(0,1);
     let column = this.state.colNames.indexOf(letter) + 1;
     let row = parseInt(cell.id.substring(1));
@@ -219,7 +221,7 @@ export default class Mainboard extends Component {
 
   
   render() {
-    //console.log(this.state.board)
+    //console.log(this.state.socket)
     return (
 
       <div className="main-view">

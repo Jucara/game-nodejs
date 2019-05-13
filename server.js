@@ -9,9 +9,13 @@ http.listen(4000, function(){
 
 io.on('connection', function(socket){
   console.log('Client connected');
-  if (players.length >= 2 )
-    return;
-  players.push(socket);
+  // if (players.length >= 2 )
+  //   return;
+  // players.push(socket);
+  socket.on('test', function(data){
+    console.log("100");
+    console.log(data);
+  })
   socket.on("Press button", function(data){
     console.log('Received button press', data)
     if (players.indexOf(socket) == turn){
@@ -21,7 +25,8 @@ io.on('connection', function(socket){
       socket.emit('message', "It's not your turn, fool!");
     }
   })
+  socket.on('message', console.log);
 })
 
-let players = [];
-let turn = 0;
+// let players = [];
+// let turn = 0;
