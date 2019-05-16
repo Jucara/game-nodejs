@@ -74,21 +74,16 @@ function mandatoryMoves(row, column, color, isQueen) {
 
   let obligedMoves = [];
 
-  cellLowerLeft = board[row + 1][column - 1];
-  cellLowerRight = board[row + 1][column + 1];
-  cellUpperLeft = board[row - 1][column - 1];
-  cellUpperRight = board[row - 1][column + 1];
-
-  if((column > 1) && (row < 6) && (color === 'black' || isQueen) && (cellLowerLeft !== '') && (cellLowerLeft.split(' ', 1)[0] !== color) && (board[row + 2][column - 2] === ''))
+  if((column > 1) && (row < 6) && (color === 'black' || isQueen) && (board[row + 1][column - 1] !== '') && (board[row + 1][column - 1].split(' ', 1)[0] !== color) && (board[row + 2][column - 2] === ''))
     obligedMoves.push(colNames[column - 2] + (row + 3));
 
-  if((column < 6) && (row < 6) && (color === 'black' || isQueen) && (cellLowerRight !== '') && (cellLowerRight.split(' ', 1)[0] !== color) && (board[row + 2][column + 2] === ''))
+  if((column < 6) && (row < 6) && (color === 'black' || isQueen) && (board[row + 1][column + 1] !== '') && (board[row + 1][column + 1].split(' ', 1)[0] !== color) && (board[row + 2][column + 2] === ''))
     obligedMoves.push(colNames[column + 2] + (row + 3));
 
-  if((column > 1) && (row > 1) && (color === 'white' || isQueen) && (cellUpperLeft !== '') && (cellUpperLeft.split(' ', 1)[0] !== color) && (board[row - 2][column - 2] === ''))
+  if((column > 1) && (row > 1) && (color === 'white' || isQueen) && (board[row - 1][column - 1] !== '') && (board[row - 1][column - 1].split(' ', 1)[0] !== color) && (board[row - 2][column - 2] === ''))
     obligedMoves.push(colNames[column - 2] + (row - 1));
 
-  if((column > 1) && (row < 6) && (color === 'white' || isQueen) && (cellUpperRight !== '') && (cellUpperRight.split(' ', 1)[0] !== color) && (board[row - 2][column + 2] === ''))
+  if((column < 6) && (row > 1) && (color === 'white' || isQueen) && (board[row - 1][column + 1] !== '') && (board[row - 1][column + 1].split(' ', 1)[0] !== color) && (board[row - 2][column + 2] === ''))
     obligedMoves.push(colNames[column + 2] + (row - 1));
 
   return obligedMoves;
