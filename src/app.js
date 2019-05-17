@@ -26,7 +26,7 @@ class Chat extends Component{
       playerTwo:'', 
       playerNumber: ''
     };
-    socket = io(this.state.endpoint);
+    socket = io();
   }  
 
   login(event) {
