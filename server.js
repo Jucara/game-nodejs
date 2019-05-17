@@ -46,7 +46,7 @@ function verifpiece(data) {
 }
 function possibleMoves(row, column, color, isQueen) {
 
-  console.log(row, " ", column, " ", color, " ",isQueen);
+  
   let legalMove = [];
   let moveUpperLeft = colNames[column - 1] + (row);
   let moveUpperRight = colNames[column + 1] + (row);
@@ -84,7 +84,7 @@ function possibleMoves(row, column, color, isQueen) {
     else
       legalMove.push(colNames[column + 2] + (row - 1));
   }
-  console.log(legalMove);
+  
   return legalMove;
 }
 
@@ -124,8 +124,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 });
 
  io.on('connection', function (socket) {
-  console.log('user connected ', socket.id);
-  console.log(board[1][1]);
+ 
   var loggedUser; // Utilisateur connecté a la socket
   let roomID;
   let playerNumber = false;  
@@ -136,13 +135,13 @@ app.use(express.static(path.join(__dirname, 'public')));
    socket.on('user-login', function (user) {
     loggedUser = user;
 
-    //console.log('user connected : ' + loggedUser.username);
+   
     socket.emit('login', {userName: loggedUser.username});
     var message = {message: loggedUser.username + " joined the room"}
     
     socket.to(roomID).broadcast.emit('chat-message', message);
     
-    console.log('on_login', roomArray)
+   
     io.emit('room-list', roomArray.map(r => r.id));
   });
    /**
@@ -161,13 +160,13 @@ app.use(express.static(path.join(__dirname, 'public')));
     }
     if(roomArray.indexOf(roomID) === -1){roomArray.push(room)}; // compte le nombre de joueurs à la room
     playerNumber =true;
-    console.log('room update', room);
+    
     socket.emit('room-service', [room.id, room.player1, room.player2]);
     
     socket.emit('playerNumber', playerNumber);
-    console.log('on_login', roomArray)
+   
     io.emit('room-list', roomArray.map(r => r.id));
-    // console.log('player',playerNumber)
+ 
 
     // jeu de dame -> mouvement
     socket.on('move', function(data){
@@ -188,18 +187,17 @@ app.use(express.static(path.join(__dirname, 'public')));
                 obligedMoves = mandatoryMoves(row_origin, column_origin, 'white', board[row_origin][column_origin].includes('queen'))
             }
           }
-          console.log("obliged", obligedMoves);
+         
           if((obligedMoves.length === 0) || (obligedMoves.indexOf(data.playerMove.substring(2, 4)) !== -1) && ((plusieurs_prises.length === 0) || (plusieurs_prises.indexOf(data.playerMove) !== -1))) {
             plusieurs_prises = [];
-            console.log(data.playerMove.substring(2, 4));
+            
             if(possibleMoves(row_origin, column_origin, 'white', board[row_origin][column_origin].includes('queen')).indexOf(data.playerMove.substring(2, 4)) !== -1){
-              console.log(1000);
+             
               if(row_dest == 0 && !board[row_origin][column_origin].includes('queen'))
                 board[row_dest][column_dest] = 'white queen';
               else
                 board[row_dest][column_dest] = board[row_origin][column_origin];
               board[row_origin][column_origin] = '';
-              //console.log('possibleMoves',possibleMoves(row_origin, column_origin, 'black', board[row_origin][column_origin].includes('queen')))
 
               if (Math.abs(row_origin - row_dest) > 1) {
                   board[(row_origin + row_dest) / 2][(column_origin + column_dest) / 2] = '';
@@ -218,11 +216,14 @@ app.use(express.static(path.join(__dirname, 'public')));
               }
               io.to(roomID).emit('move', data);
               turn = 'black';
+              if(gameOver('black') === true){
+                console.log('Jamal a gagné');
+                io.to(roomID).emit('gameOver', 'white won')
+              }
 
             }
           }
         }
-        console.table(board);
       }
     })
    
@@ -232,17 +233,17 @@ app.use(express.static(path.join(__dirname, 'public')));
    * et réémission vers tous les utilisateurs connectés à la room
    */
    socket.on('joinRoom', function(data){
-    console.log(data);
+    
     // joueur qui rejoint la room = joueur 2
     socket.leave(roomID);
     roomID = data.roomName;
     socket.join(roomID)
     
     let room = roomArray.find(r => r.id == roomID);
-    console.log(room)
+    
     
     room.player2 = data.user;
-    console.log('room update2', room);
+    
     io.emit('room-service', [room.id, room.player1, room.player2]);
     socket.emit('playerNumber', playerNumber)
 
@@ -250,7 +251,7 @@ app.use(express.static(path.join(__dirname, 'public')));
     if(clientsInRoom === 2){ 
       roomArray.splice(roomArray.indexOf(roomID),1)
       
-      console.log('on_login', roomArray)
+      
       io.emit('room-list', roomArray.map(r => r.id));
     }
     
@@ -274,7 +275,7 @@ app.use(express.static(path.join(__dirname, 'public')));
                obligedMoves = mandatoryMoves(row_origin, column_origin, 'black', board[row_origin][column_origin].includes('queen'))
             }
           }
-          console.log("obliged", obligedMoves);
+         
           if((obligedMoves.length === 0) || (obligedMoves.indexOf(data.playerMove.substring(2, 4)) !== -1)&& ((plusieurs_prises.length === 0) || (plusieurs_prises.indexOf(data.playerMove) !== -1))){
             
             plusieurs_prises = [];
@@ -284,7 +285,6 @@ app.use(express.static(path.join(__dirname, 'public')));
               else
                 board[row_dest][column_dest] = board[row_origin][column_origin];
               board[row_origin][column_origin] = '';
-              //console.log('possibleMoves',possibleMoves(row_origin, column_origin, 'black', board[row_origin][column_origin].includes('queen')))
               
               if (Math.abs(row_origin - row_dest) > 1) {
                   board[(row_origin + row_dest) / 2][(column_origin + column_dest) / 2] = '';
@@ -313,7 +313,7 @@ app.use(express.static(path.join(__dirname, 'public')));
             }
           }
         }
-        console.table(board);
+       
       }
     })
 
@@ -338,7 +338,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
     }
     socket.leave(data.roomName);
-    console.log('on_login', roomArray)
+   
     io.emit('room-list', roomArray.map(r=>r.id));
 
   })
@@ -357,7 +357,7 @@ app.use(express.static(path.join(__dirname, 'public')));
    */
    socket.on('disconnect', function () {
     if(loggedUser !== undefined){
-      console.log('user disconnected : ' + loggedUser.username);
+     
       var serviceMessage = {
         text: 'User "' + loggedUser.username + '" disconnected',
         type: 'logout'

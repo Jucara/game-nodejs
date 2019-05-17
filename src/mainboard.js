@@ -56,7 +56,6 @@ class Game extends Component{
 
     if(this.state.selected){
       if((this.state.mandatory.length !== 0) && (this.state.mandatory.indexOf(this.state.selected + choice ) === -1)) {
-        console.log("u have to capture smthg u fool")
         return;
       }
       let index = this.state.legalMove.indexOf(choice)
@@ -64,9 +63,6 @@ class Game extends Component{
         this.socket.emit("move", {playerNumber:this.props.playerNumber, playerMove: this.state.selected + choice});
 
       }
-      else
-        console.log('move pas legal')
-
     }
   }
 
@@ -83,7 +79,6 @@ class Game extends Component{
    for(let square in newBoard){
      newBoard[square].highlighted = legalMove.includes(square);
    }
-   console.log(this.state.mandatory);
    this.setState({board: newBoard});
   }
 
@@ -98,8 +93,6 @@ class Game extends Component{
        if ((pieceColor === 'red' || cell.queen) && (column - 3 >= 0) && (row < 7) && ((this.state.board[this.state.colNames[column - 2] + (row + 1)].pieceColor !== pieceColor) && this.state.board[this.state.colNames[column - 2] + (row + 1)].content !== '') &&  (this.state.board[(this.state.colNames[column - 3] + (row + 2))].content === '')) {
 
          if(this.state.mandatory.indexOf(cell.id + this.state.colNames[column - 3] + (row + 2)) === -1) {
-          console.log(cell);
-          console.log(pieceColor);
            newMandatory.push(cell.id + this.state.colNames[column - 3] + (row + 2))
            
          }
@@ -116,8 +109,6 @@ class Game extends Component{
        if ((pieceColor === 'blue' || cell.queen) && (column - 3 >= 0) && (row > 2) && ((this.state.board[this.state.colNames[column - 2] + (row - 1)].pieceColor !== pieceColor) && this.state.board[this.state.colNames[column - 2] + (row - 1)].content !== '') &&  (this.state.board[(this.state.colNames[column - 3] + (row - 2))].content === '')) {
 
          if(this.state.mandatory.indexOf(cell.id + this.state.colNames[column - 3] + (row - 2)) === -1) {
-          console.log(cell);
-          console.log(pieceColor);
            newMandatory.push(cell.id + this.state.colNames[column - 3] + (row - 2))
            
          }
@@ -195,7 +186,6 @@ class Game extends Component{
         this.state.legalMove.forEach(element => {newBoard[element].highlighted = false});
         this.setState({board: newBoard});
         let selected = data.playerMove.substring(0, 2);
-        console.log(selected)
         
         let pieceColor = this.state.board[selected].pieceColor;
 
@@ -235,7 +225,7 @@ class Game extends Component{
 //-------------------------------------------------------------
 }
 render(){
-  // console.log(this.state.board)
+  
   return (
 
     <>        
